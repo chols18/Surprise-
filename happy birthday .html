@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Birthday Greeting Card</title>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #f7fafc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #card {
+      position: relative;
+      width: 375px;
+      height: 762px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .background {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .background img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+    #confetti-container {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .content {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 1.5rem;
+    }
+    .birthday-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3.75rem;
+      color: white;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+    .celebrant-name {
+      font-size: 1.875rem;
+      color: white;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+    .message {
+      color: white;
+      font-size: 1.125rem;
+      margin-bottom: 2rem;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    }
+    .date {
+      color: white;
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    }
+    .button {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      z-index: 30;
+    }
+    .button button {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      border: none;
+      font-size: 1rem;
+    }
+    .button button:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #f2f2f2;
+      opacity: 0.8;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(720deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="background">
+      <img src="rose.jpg" alt="Celebrant" />
+      <div class="overlay"></div>
+    </div>
+
+    <div id="confetti-container"></div>
+
+    <div class="content">
+      <h1 class="birthday-title">Happy Birthday!</h1>
+      <h2 class="celebrant-name">Emma</h2>
+      <p class="message">Wishing you a day filled with happiness and a year filled with joy. May all your dreams come true!</p>
+      <p class="date">June 13, 2025</p>
+    </div>
+
+    <!-- Music Control Button -->
+    <div class="button">
+      <button id="music-btn"><span id="music-text">Play Music</span></button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const confettiContainer = document.getElementById('confetti-container');
+      const card = document.getElementById('card');
+      const colors = ['#FF6B8B', '#7B68EE', '#FFD700', '#FF69B4', '#00CED1', '#FFA500'];
+      const confettiCount = 150;
+      let audioPlaying = false;
+
+      const audio = new Audio('rose.mp3'); // <-- Replace with your actual audio file path
+      audio.loop = true;
+
+      function createConfetti() {
+        for (let i = 0; i < confettiCount; i++) {
+          const confetti = document.createElement('div');
+          confetti.classList.add('confetti');
+
+          const size = Math.random() * 10 + 5;
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const left = Math.random() * 100;
+          const duration = Math.random() * 3 + 2;
+          const delay = Math.random() * 5;
+
+          confetti.style.width = `${size}px`;
+          confetti.style.height = `${size}px`;
+          confetti.style.backgroundColor = color;
+          confetti.style.left = `${left}%`;
+          confetti.style.top = '-20px';
+          confetti.style.animationDuration = `${duration}s`;
+          confetti.style.animationDelay = `${delay}s`;
+          confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+          confettiContainer.appendChild(confetti);
+
+          setTimeout(() => {
+            confetti.remove();
+          }, (duration + delay) * 1000);
+        }
+      }
+
+      // Initial confetti on load
+      createConfetti();
+
+      card.addEventListener('click', function (e) {
+        if (e.target.id !== 'music-btn' && e.target.id !== 'music-text') {
+          createConfetti();
+        }
+      });
+
+      document.getElementById('music-btn').addEventListener('click', function () {
+        const musicText = document.getElementById('music-text');
+        if (audioPlaying) {
+          audio.pause();
+          audioPlaying = false;
+          musicText.textContent = 'Play Music';
+        } else {
+          audio.play().catch((e) => console.log('Audio play error:', e));
+          audioPlaying = true;
+          musicText.textContent = 'Pause Music';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
